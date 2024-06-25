@@ -133,6 +133,7 @@ def main(args: argparse.Namespace):
     # ROS
     rclpy.init(args=args)
     node = ExplorationNode()
+    rate = node.create_rate(RATE)
 
     while rclpy.ok():
         # EXPLORATION MODE
@@ -198,8 +199,10 @@ def main(args: argparse.Namespace):
             waypoint_msg.data = chosen_waypoint
             node.waypoint_pub.publish(waypoint_msg)
             print("Published waypoint")
+        rclpy.spin_once(node, timeout_sec=0)
         rate.sleep()
-
+    node.destroy_node()
+    rclpy.shutdown()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
