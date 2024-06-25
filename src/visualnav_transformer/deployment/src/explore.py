@@ -119,7 +119,7 @@ def main(args: argparse.Namespace):
     )
 
     # ROS
-    rclpy.init(args=args)
+    rclpy.init()
     node = ExplorationNode()
     rate = node.create_rate(RATE)
 
