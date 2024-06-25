@@ -11,12 +11,10 @@ import matplotlib.pyplot as plt
 import yaml
 
 # ROS
-import rospy
 from sensor_msgs.msg import Image
 from std_msgs.msg import Bool, Float32MultiArray
-from utils import msg_to_pil, to_numpy, transform_images, load_model
-
-from vint_train.training.train_utils import get_action
+from visualnav_transformer.deployment.src.utils import msg_to_pil, to_numpy, transform_images, load_model
+from visualnav_transformer.train.vint_train.training.train_utils import get_action
 import torch
 from PIL import Image as PILImage
 import numpy as np
@@ -26,15 +24,15 @@ import time
 
 
 # UTILS
-from topic_names import (IMAGE_TOPIC,
+from visualnav_transformer.deployment.src.topic_names import (IMAGE_TOPIC,
                         WAYPOINT_TOPIC,
                         SAMPLED_ACTIONS_TOPIC)
 
 
 # CONSTANTS
-MODEL_WEIGHTS_PATH = "../model_weights"
-ROBOT_CONFIG_PATH ="../config/robot.yaml"
-MODEL_CONFIG_PATH = "../config/models.yaml"
+MODEL_WEIGHTS_PATH = "model_weights"
+ROBOT_CONFIG_PATH ="config/robot.yaml"
+MODEL_CONFIG_PATH = "config/models.yaml"
 with open(ROBOT_CONFIG_PATH, "r") as f:
     robot_config = yaml.safe_load(f)
 MAX_V = robot_config["max_v"]
@@ -58,6 +56,44 @@ def callback_obs(msg):
             context_queue.pop(0)
             context_queue.append(obs_img)
 
+
+import rclpy
+from rclpy.node import Node
+from sensor_msgs.msg import Image
+from std_msgs.msg import Float32MultiArray
+
+class ExplorationNode(Node):
+    def __init__(self):
+        super().__init__("exploration_node")
+        
+        self.create_subscription(
+            Image,
+            IMAGE_TOPIC,
+            self.callback_obs,
+            1
+        )
+        
+        self.waypoint_pub = self.create_publisher(
+            Float32MultiArray,
+            WAYPOINT_TOPIC,
+            1
+        )
+        
+        self.sampled_actions_pub = self.create_publisher(
+            Float32MultiArray,
+            SAMPLED_ACTIONS_TOPIC,
+            1
+        )
+        
+        self.timer = self.create_timer(1.0 / RATE, self.timer_callback)
+
+    def callback_obs(self, msg):
+        # Your callback logic here
+        pass
+
+    def timer_callback(self):
+        # Your periodic execution logic here
+        pass
 
 def main(args: argparse.Namespace):
     global context_size
@@ -95,17 +131,10 @@ def main(args: argparse.Namespace):
     )
 
     # ROS
-    rospy.init_node("EXPLORATION", anonymous=False)
-    rate = rospy.Rate(RATE)
-    image_curr_msg = rospy.Subscriber(
-        IMAGE_TOPIC, Image, callback_obs, queue_size=1)
-    waypoint_pub = rospy.Publisher(
-        WAYPOINT_TOPIC, Float32MultiArray, queue_size=1)  
-    sampled_actions_pub = rospy.Publisher(SAMPLED_ACTIONS_TOPIC, Float32MultiArray, queue_size=1)
+    rclpy.init(args=args)
+    node = ExplorationNode()
 
-    print("Registered with master node. Waiting for image observations...")
-
-    while not rospy.is_shutdown():
+    while rclpy.ok():
         # EXPLORATION MODE
         waypoint_msg = Float32MultiArray()
         if (
@@ -158,7 +187,7 @@ def main(args: argparse.Namespace):
             
             sampled_actions_msg = Float32MultiArray()
             sampled_actions_msg.data = np.concatenate((np.array([0]), naction.flatten()))
-            sampled_actions_pub.publish(sampled_actions_msg)
+            node.sampled_actions_pub.publish(sampled_actions_msg)
 
             naction = naction[0] # change this based on heuristic
 
@@ -167,7 +196,7 @@ def main(args: argparse.Namespace):
             if model_params["normalize"]:
                 chosen_waypoint *= (MAX_V / RATE)
             waypoint_msg.data = chosen_waypoint
-            waypoint_pub.publish(waypoint_msg)
+            node.waypoint_pub.publish(waypoint_msg)
             print("Published waypoint")
         rate.sleep()
 

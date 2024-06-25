@@ -2,7 +2,7 @@ import os
 import wandb
 import numpy as np
 from typing import List, Optional, Tuple
-from vint_train.visualizing.visualize_utils import numpy_to_img
+from visualnav_transformer.train.vint_train.visualizing.visualize_utils import numpy_to_img
 import matplotlib.pyplot as plt
 
 
