@@ -1,12 +1,11 @@
 import argparse
 import os
-from utils import msg_to_pil 
 import time
 
 # ROS
 import rospy
-from sensor_msgs.msg import Image
-from sensor_msgs.msg import Joy
+from sensor_msgs.msg import Image, Joy
+from utils import msg_to_pil
 
 IMAGE_TOPIC = "/usb_cam/image_raw"
 TOPOMAP_IMAGES_DIR = "../topomaps/images"
@@ -38,10 +37,8 @@ def callback_joy(msg: Joy):
 def main(args: argparse.Namespace):
     global obs_img
     rospy.init_node("CREATE_TOPOMAP", anonymous=False)
-    image_curr_msg = rospy.Subscriber(
-        IMAGE_TOPIC, Image, callback_obs, queue_size=1)
-    subgoals_pub = rospy.Publisher(
-        "/subgoals", Image, queue_size=1)
+    image_curr_msg = rospy.Subscriber(IMAGE_TOPIC, Image, callback_obs, queue_size=1)
+    subgoals_pub = rospy.Publisher("/subgoals", Image, queue_size=1)
     joy_sub = rospy.Subscriber("joy", Joy, callback_joy)
 
     topomap_name_dir = os.path.join(TOPOMAP_IMAGES_DIR, args.dir)
@@ -50,10 +47,9 @@ def main(args: argparse.Namespace):
     else:
         print(f"{topomap_name_dir} already exists. Removing previous images...")
         remove_files_in_dir(topomap_name_dir)
-        
 
     assert args.dt > 0, "dt must be positive"
-    rate = rospy.Rate(1/args.dt)
+    rate = rospy.Rate(1 / args.dt)
     print("Registered with master node. Waiting for images...")
     i = 0
     start_time = float("inf")
@@ -84,7 +80,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--dt",
         "-t",
-        default=1.,
+        default=1.0,
         type=float,
         help=f"time between images sampled from the {IMAGE_TOPIC} topic (default: 3.0)",
     )

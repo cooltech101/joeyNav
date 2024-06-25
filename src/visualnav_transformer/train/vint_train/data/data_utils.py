@@ -1,20 +1,17 @@
-import numpy as np
-import os
-from PIL import Image
-from typing import Any, Iterable, Tuple
-
-import torch
-from torchvision import transforms
-import torchvision.transforms.functional as TF
-import torch.nn.functional as F
 import io
-from typing import Union
+import os
+from typing import Tuple, Union
+
+import numpy as np
+import torch
+import torchvision.transforms.functional as TF
+from PIL import Image
+from torchvision import transforms
 
 VISUALIZATION_IMAGE_SIZE = (160, 120)
 IMAGE_ASPECT_RATIO = (
     4 / 3
 )  # all images are centered cropped to a 4:3 aspect ratio in training
-
 
 
 def get_data_path(data_folder: str, f: str, time: int, data_type: str = "image"):
@@ -94,7 +91,10 @@ def calculate_sin_cos(waypoints: torch.Tensor) -> torch.Tensor:
 
 
 def transform_images(
-    img: Image.Image, transform: transforms, image_resize_size: Tuple[int, int], aspect_ratio: float = IMAGE_ASPECT_RATIO
+    img: Image.Image,
+    transform: transforms,
+    image_resize_size: Tuple[int, int],
+    aspect_ratio: float = IMAGE_ASPECT_RATIO,
 ):
     w, h = img.size
     if w > h:
@@ -109,7 +109,9 @@ def transform_images(
 
 
 def resize_and_aspect_crop(
-    img: Image.Image, image_resize_size: Tuple[int, int], aspect_ratio: float = IMAGE_ASPECT_RATIO
+    img: Image.Image,
+    image_resize_size: Tuple[int, int],
+    aspect_ratio: float = IMAGE_ASPECT_RATIO,
 ):
     w, h = img.size
     if w > h:
@@ -121,7 +123,9 @@ def resize_and_aspect_crop(
     return resize_img
 
 
-def img_path_to_data(path: Union[str, io.BytesIO], image_resize_size: Tuple[int, int]) -> torch.Tensor:
+def img_path_to_data(
+    path: Union[str, io.BytesIO], image_resize_size: Tuple[int, int]
+) -> torch.Tensor:
     """
     Load an image from a path and transform it
     Args:
@@ -131,5 +135,4 @@ def img_path_to_data(path: Union[str, io.BytesIO], image_resize_size: Tuple[int,
         torch.Tensor: resized image as tensor
     """
     # return transform_images(Image.open(path), transform, image_resize_size, aspect_ratio)
-    return resize_and_aspect_crop(Image.open(path), image_resize_size)    
-
+    return resize_and_aspect_crop(Image.open(path), image_resize_size)

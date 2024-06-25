@@ -1,12 +1,10 @@
-
+import argparse
 import os
 import pickle
-from PIL import Image
-import io
-import argparse
+
+import rosbag
 import tqdm
 import yaml
-import rosbag
 
 # utils
 from visualnav_transformer.train.vint_train.process_data.process_data_utils import *
@@ -54,7 +52,6 @@ def main(args: argparse.Namespace):
             ang_offset=config[args.dataset_name]["ang_offset"],
         )
 
-  
         if bag_img_data is None or bag_traj_data is None:
             print(
                 f"{bag_path} did not have the topics we were looking for. Skipping..."

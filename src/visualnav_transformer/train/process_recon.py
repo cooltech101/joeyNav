@@ -1,10 +1,11 @@
-import h5py
+import argparse
+import io
 import os
 import pickle
-from PIL import Image
-import io
-import argparse
+
+import h5py
 import tqdm
+from PIL import Image
 
 
 def main(args: argparse.Namespace):

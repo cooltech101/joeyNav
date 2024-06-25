@@ -1,6 +1,6 @@
 import numpy as np
-from PIL import Image
 import torch
+from PIL import Image
 
 VIZ_IMAGE_SIZE = (640, 480)
 RED = np.array([1, 0, 0])

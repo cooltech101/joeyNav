@@ -1,9 +1,13 @@
 import os
-import wandb
-import numpy as np
-from typing import List, Optional, Tuple
-from visualnav_transformer.train.vint_train.visualizing.visualize_utils import numpy_to_img
+from typing import Optional
+
 import matplotlib.pyplot as plt
+import numpy as np
+import wandb
+
+from visualnav_transformer.train.vint_train.visualizing.visualize_utils import (
+    numpy_to_img,
+)
 
 
 def visualize_dist_pred(

@@ -1,7 +1,7 @@
 import argparse
 import os
-import shutil
 import random
+import shutil
 
 
 def remove_files_in_dir(dir_path: str):
@@ -68,7 +68,10 @@ if __name__ == "__main__":
         "--split", "-s", type=float, default=0.8, help="Train/test split (default: 0.8)"
     )
     parser.add_argument(
-        "--data-splits-dir", "-o", default="vint_train/data/data_splits", help="Data splits directory"
+        "--data-splits-dir",
+        "-o",
+        default="vint_train/data/data_splits",
+        help="Data splits directory",
     )
     args = parser.parse_args()
     main(args)

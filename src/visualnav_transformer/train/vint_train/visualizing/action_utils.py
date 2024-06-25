@@ -1,26 +1,25 @@
 import os
-import numpy as np
-import matplotlib.pyplot as plt
+from typing import Optional
+
 import cv2
-from typing import Optional, List
+import matplotlib.pyplot as plt
+import numpy as np
 import wandb
 import yaml
-import torch
-import torch.nn as nn
+
 from visualnav_transformer.train.vint_train.visualizing.visualize_utils import (
-    to_numpy,
-    numpy_to_img,
-    VIZ_IMAGE_SIZE,
-    RED,
-    GREEN,
-    BLUE,
     CYAN,
-    YELLOW,
+    GREEN,
     MAGENTA,
+    RED,
+    VIZ_IMAGE_SIZE,
+    numpy_to_img,
 )
 
 # load data_config.yaml
-with open(os.path.join(os.path.dirname(__file__), "../data/data_config.yaml"), "r") as f:
+with open(
+    os.path.join(os.path.dirname(__file__), "../data/data_config.yaml"), "r"
+) as f:
     data_config = yaml.safe_load(f)
 
 
@@ -227,7 +226,12 @@ def plot_trajs_and_points_on_image(
         for i, traj in enumerate(list_trajs):
             xy_coords = traj[:, :2]  # (horizon, 2)
             traj_pixels = get_pos_pixels(
-                xy_coords, camera_height, camera_x_offset, camera_matrix, dist_coeffs, clip=False
+                xy_coords,
+                camera_height,
+                camera_x_offset,
+                camera_matrix,
+                dist_coeffs,
+                clip=False,
             )
             if len(traj_pixels.shape) == 2:
                 ax.plot(
@@ -244,7 +248,12 @@ def plot_trajs_and_points_on_image(
             else:
                 point = point[:, :2]
             pt_pixels = get_pos_pixels(
-                point, camera_height, camera_x_offset, camera_matrix, dist_coeffs, clip=True
+                point,
+                camera_height,
+                camera_x_offset,
+                camera_matrix,
+                dist_coeffs,
+                clip=True,
             )
             ax.plot(
                 pt_pixels[:250, 0],
@@ -294,13 +303,15 @@ def plot_trajs_and_points(
     assert (
         traj_labels is None or len(list_trajs) == len(traj_labels) or default_coloring
     ), "Not enough labels for trajectories"
-    assert point_labels is None or len(list_points) == len(point_labels), "Not enough labels for points"
+    assert point_labels is None or len(list_points) == len(
+        point_labels
+    ), "Not enough labels for points"
 
     for i, traj in enumerate(list_trajs):
         if traj_labels is None:
             ax.plot(
-                traj[:, 0], 
-                traj[:, 1], 
+                traj[:, 0],
+                traj[:, 1],
                 color=traj_colors[i],
                 alpha=traj_alphas[i] if traj_alphas is not None else 1.0,
                 marker="o",
@@ -314,7 +325,9 @@ def plot_trajs_and_points(
                 alpha=traj_alphas[i] if traj_alphas is not None else 1.0,
                 marker="o",
             )
-        if traj.shape[1] > 2 and quiver_freq > 0:  # traj data also includes yaw of the robot
+        if (
+            traj.shape[1] > 2 and quiver_freq > 0
+        ):  # traj data also includes yaw of the robot
             bearings = gen_bearings_from_waypoints(traj)
             ax.quiver(
                 traj[::quiver_freq, 0],
@@ -327,12 +340,12 @@ def plot_trajs_and_points(
     for i, pt in enumerate(list_points):
         if point_labels is None:
             ax.plot(
-                pt[0], 
-                pt[1], 
-                color=point_colors[i], 
+                pt[0],
+                pt[1],
+                color=point_colors[i],
                 alpha=point_alphas[i] if point_alphas is not None else 1.0,
                 marker="o",
-                markersize=7.0
+                markersize=7.0,
             )
         else:
             ax.plot(
@@ -345,7 +358,6 @@ def plot_trajs_and_points(
                 label=point_labels[i],
             )
 
-    
     # put the legend below the plot
     if traj_labels is not None or point_labels is not None:
         ax.legend()

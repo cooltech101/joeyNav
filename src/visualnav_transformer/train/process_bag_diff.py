@@ -1,12 +1,10 @@
-
+import argparse
 import os
 import pickle
-from PIL import Image
-import io
-import argparse
+
+import rosbag
 import tqdm
 import yaml
-import rosbag
 
 # utils
 from visualnav_transformer.train.vint_train.process_data.process_data_utils import *
@@ -46,11 +44,11 @@ def main(args: argparse.Namespace):
         # load the bag file
         bag_img_data, bag_traj_data = get_images_and_odom_2(
             b,
-            ['/usb_cam_front/image_raw', '/chosen_subgoal'],
-            ['/odom'],
+            ["/usb_cam_front/image_raw", "/chosen_subgoal"],
+            ["/odom"],
             rate=args.sample_rate,
         )
-  
+
         if bag_img_data is None:
             print(
                 f"{bag_path} did not have the topics we were looking for. Skipping..."
@@ -73,8 +71,8 @@ def main(args: argparse.Namespace):
 
         traj_folder = os.path.join(args.output_dir, traj_name)
         if not os.path.exists(traj_folder):
-                os.makedirs(traj_folder)
-        
+            os.makedirs(traj_folder)
+
         obs_images = bag_img_data["/usb_cam_front/image_raw"]
         diff_images = bag_img_data["/chosen_subgoal"]
         for i, img_data in enumerate(zip(obs_images, diff_images)):
@@ -85,7 +83,7 @@ def main(args: argparse.Namespace):
             diff_image.save(os.path.join(traj_folder, f"diff_{i}.jpg"))
 
         with open(os.path.join(traj_folder, "traj_data.pkl"), "wb") as f:
-                pickle.dump(bag_traj_data['/odom'], f)
+            pickle.dump(bag_traj_data["/odom"], f)
 
 
 if __name__ == "__main__":

@@ -1,10 +1,13 @@
+from typing import Optional, Tuple
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from typing import List, Dict, Optional, Tuple
-from visualnav_transformer.train.vint_train.models.gnm.modified_mobilenetv2 import MobileNetEncoder
 from visualnav_transformer.train.vint_train.models.base_model import BaseModel
+from visualnav_transformer.train.vint_train.models.gnm.modified_mobilenetv2 import (
+    MobileNetEncoder,
+)
 
 
 class GNM(BaseModel):

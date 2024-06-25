@@ -62,7 +62,7 @@ In the [papers](https://general-navigation-models.github.io), we train on a comb
 
 We recommend you to download these (and any other datasets you may want to train on) and run the processing steps below.
 
-#### Data Processing 
+#### Data Processing
 
 We provide some sample scripts to process these datasets, either directly from a rosbag or from a custom format like HDF5s:
 1. Run `process_bags.py` with the relevant args, or `process_recon.py` for processing RECON HDF5s. You can also manually add your own dataset by following our structure below (if you are adding a custom dataset, please checkout the [Custom Datasets](#custom-datasets) section).
@@ -105,15 +105,15 @@ After step 2 of data processing, the processed data-split should the following s
 │   ├── train
 |   |   └── traj_names.txt
 └── └── test
-        └── traj_names.txt 
-``` 
+        └── traj_names.txt
+```
 
 ### Training your General Navigation Models
 Run this inside the `vint_release/train` directory:
 ```bash
 python train.py -c <path_of_train_config_file>
 ```
-The premade config yaml files are in the `train/config` directory. 
+The premade config yaml files are in the `train/config` directory.
 
 #### Custom Config Files
 You can use one of the premade yaml files as a starting point and change the values as you need. `config/vint.yaml` is good choice since it has commented arguments. `config/defaults.yaml` contains the default config values (don't directly train with this config file since it does not specify any datasets for training).
@@ -130,8 +130,8 @@ Locate your training config file and add the following text under the `datasets`
 ```
 <dataset_name>:
     data_folder: <path_to_the_dataset>
-    train: data/data_splits/<dataset_name>/train/ 
-    test: data/data_splits/<dataset_name>/test/ 
+    train: data/data_splits/<dataset_name>/train/
+    test: data/data_splits/<dataset_name>/test/
     end_slack: 0 # how many timesteps to cut off from the end of each trajectory  (in case many trajectories end in collisions)
     goals_per_obs: 1 # how many goals are sampled per observation
     negative_mining: True # negative mining from the ViNG paper (Shah et al.)
@@ -139,7 +139,7 @@ Locate your training config file and add the following text under the `datasets`
 
 #### Training your model from a checkpoint
 Instead of training from scratch, you can also load an existing checkpoint from the published results.
-Add `load_run: <project_name>/<log_run_name>`to your .yaml config file in `vint_release/train/config/`. The `*.pth` of the file you are loading to be saved in this file structure and renamed to “latest”: `vint_release/train/logs/<project_name>/<log_run_name>/latest.pth`. This makes it easy to train from the checkpoint of a previous run since logs are saved this way by default. Note: if you are loading a checkpoint from a previous run, check for the name the run in the `vint_release/train/logs/<project_name>/`, since the code appends a string of the date to each run_name specified in the config yaml file of the run to avoid duplicate run names. 
+Add `load_run: <project_name>/<log_run_name>`to your .yaml config file in `vint_release/train/config/`. The `*.pth` of the file you are loading to be saved in this file structure and renamed to “latest”: `vint_release/train/logs/<project_name>/<log_run_name>/latest.pth`. This makes it easy to train from the checkpoint of a previous run since logs are saved this way by default. Note: if you are loading a checkpoint from a previous run, check for the name the run in the `vint_release/train/logs/<project_name>/`, since the code appends a string of the date to each run_name specified in the config yaml file of the run to avoid duplicate run names.
 
 
 If you want to use our checkpoints, you can download the `*.pth` files from [this link](https://drive.google.com/drive/folders/1a9yWR2iooXFAqjQHetz263--4_2FFggg?usp=sharing).
@@ -155,24 +155,24 @@ This software was tested on a LoCoBot running Ubuntu 20.04.
 
 #### Software Installation (in this order)
 1. ROS: [ros-noetic](https://wiki.ros.org/noetic/Installation/Ubuntu)
-2. ROS packages: 
+2. ROS packages:
     ```bash
     sudo apt-get install ros-noetic-usb-cam ros-noetic-joy
     ```
 3. [kobuki](http://wiki.ros.org/kobuki/Tutorials/Installation)
-4. Conda 
+4. Conda
     - Install anaconda/miniconda/etc. for managing environments
     - Make conda env with environment.yml (run this inside the `vint_release/` directory)
         ```bash
         conda env create -f deployment/deployment_environment.yml
         ```
-    - Source env 
+    - Source env
         ```bash
         conda activate vint_deployment
         ```
-    - (Recommended) add to `~/.bashrc`: 
+    - (Recommended) add to `~/.bashrc`:
         ```bash
-        echo “conda activate vint_deployment” >> ~/.bashrc 
+        echo “conda activate vint_deployment” >> ~/.bashrc
         ```
 5. Install the `vint_train` packages (run this inside the `vint_release/` directory):
     ```bash
@@ -189,7 +189,7 @@ This software was tested on a LoCoBot running Ubuntu 20.04.
 #### Hardware Requirements
 - LoCoBot: http://locobot.org (just the navigation stack)
 - A wide-angle RGB camera: [Example](https://www.amazon.com/ELP-170degree-Fisheye-640x480-Resolution/dp/B00VTHD17W). The `vint_locobot.launch` file uses camera parameters that work with cameras like the ELP fisheye wide angle, feel free to modify to your own. Adjust the camera parameters in `vint_release/deployment/config/camera.yaml` your camera accordingly (used for visualization).
-- [Joystick](https://www.amazon.com/Logitech-Wireless-Nano-Receiver-Controller-Vibration/dp/B0041RR0TW)/[keyboard teleop](http://wiki.ros.org/teleop_twist_keyboard) that works with Linux. Add the index mapping for the _deadman_switch_ on the joystick to the `vint_release/deployment/config/joystick.yaml`. You can find the mapping from buttons to indices for common joysticks in the [wiki](https://wiki.ros.org/joy). 
+- [Joystick](https://www.amazon.com/Logitech-Wireless-Nano-Receiver-Controller-Vibration/dp/B0041RR0TW)/[keyboard teleop](http://wiki.ros.org/teleop_twist_keyboard) that works with Linux. Add the index mapping for the _deadman_switch_ on the joystick to the `vint_release/deployment/config/joystick.yaml`. You can find the mapping from buttons to indices for common joysticks in the [wiki](https://wiki.ros.org/joy).
 
 
 ### Loading the model weights
@@ -203,19 +203,19 @@ _Make sure to run these scripts inside the `vint_release/deployment/src/` direct
 
 This section discusses a simple way to create a topological map of the target environment for deployment. For simplicity, we will use the robot in “path-following” mode, i.e. given a single trajectory in an environment, the task is to follow the same trajectory to the goal. The environment may have new/dynamic obstacles, lighting variations etc.
 
-#### Record the rosbag: 
+#### Record the rosbag:
 ```bash
 ./record_bag.sh <bag_name>
 ```
 
-Run this command to teleoperate the robot with the joystick and camera. This command opens up three windows 
+Run this command to teleoperate the robot with the joystick and camera. This command opens up three windows
 1. `roslaunch vint_locobot.launch`: This launch file opens the `usb_cam` node for the camera, the joy node for the joystick, and nodes for the robot’s mobile base.
 2. `python joy_teleop.py`: This python script starts a node that reads inputs from the joy topic and outputs them on topics that teleoperate the robot’s base.
 3. `rosbag record /usb_cam/image_raw -o <bag_name>`: This command isn’t run immediately (you have to click Enter). It will be run in the vint_release/deployment/topomaps/bags directory, where we recommend you store your rosbags.
 
 Once you are ready to record the bag, run the `rosbag record` script and teleoperate the robot on the map you want the robot to follow. When you are finished with recording the path, kill the `rosbag record` command, and then kill the tmux session.
 
-#### Make the topological map: 
+#### Make the topological map:
 ```bash
 ./create_topomap.sh <topomap_name> <bag_filename>
 ```
@@ -228,7 +228,7 @@ This command opens up 3 windows:
 When the bag stops playing, kill the tmux session.
 
 
-### Running the model 
+### Running the model
 #### Navigation
 _Make sure to run this script inside the `vint_release/deployment/src/` directory._
 

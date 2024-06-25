@@ -13,7 +13,7 @@ optimizer: adamw
 clipping: False
 max_norm: 1.
 scheduler: "cosine"
-warmup: False 
+warmup: False
 warmup_epochs: 4
 cyclic_period: 10
 plateau_patience: 3
@@ -40,7 +40,7 @@ context_size: 0
 # tradeoff between action and distance prediction loss
 alpha: 0.5
 
-# distance bounds for distance and action and distance predictions 
+# distance bounds for distance and action and distance predictions
 distance:
   min_dist_cat: 0
   max_dist_cat: 20
@@ -114,7 +114,7 @@ datasets:
 ## =0 turns off
 print_log_freq: 100 # in iterations
 image_log_freq: 1000 #0 # in iterations
-num_images_log: 8 #0 
+num_images_log: 8 #0
 pairwise_test_freq: 0 # in epochs
 eval_fraction: 0.25
 wandb_log_freq: 10 # in iterations

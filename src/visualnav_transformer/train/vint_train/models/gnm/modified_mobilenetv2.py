@@ -1,13 +1,11 @@
 # modified from PyTorch torchvision library
-from typing import Callable, Any, Optional, List
+from typing import Callable, List, Optional
 
 import torch
-from torch import Tensor
-from torch import nn
-
-from torchvision.ops.misc import ConvNormActivation
+from torch import Tensor, nn
 from torchvision.models._utils import _make_divisible
 from torchvision.models.mobilenetv2 import InvertedResidual
+from torchvision.ops.misc import ConvNormActivation
 
 
 class MobileNetEncoder(nn.Module):
