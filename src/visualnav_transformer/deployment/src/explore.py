@@ -107,13 +107,14 @@ def main(args: argparse.Namespace):
     # ROS
     rclpy.init()
     node = ExplorationNode()
-    rate = node.create_rate(RATE)
 
     while rclpy.ok():
+        loop_start_time = time.time()
         # EXPLORATION MODE
         waypoint_msg = Float32MultiArray()
+        print("Iam loop :D")
         if len(context_queue) > model_params["context_size"]:
-
+            print("I am loop too!")
             obs_images = transform_images(
                 context_queue, model_params["image_size"], center_crop=False
             )
@@ -163,13 +164,13 @@ def main(args: argparse.Namespace):
                 print("time elapsed:", time.time() - start_time)
 
             naction = to_numpy(get_action(naction))
-
             sampled_actions_msg = Float32MultiArray()
             sampled_actions_msg.data = np.concatenate(
                 (np.array([0]), naction.flatten())
             ).tolist()
             node.sampled_actions_pub.publish(sampled_actions_msg)
 
+            print(naction)
             naction = naction[0]  # change this based on heuristic
 
             chosen_waypoint = naction[args.waypoint]
@@ -178,9 +179,13 @@ def main(args: argparse.Namespace):
                 chosen_waypoint *= MAX_V / RATE
             waypoint_msg.data = chosen_waypoint.tolist()
             node.waypoint_pub.publish(waypoint_msg)
+
             print("Published waypoint")
+            elapsed_time = time.time() - loop_start_time
+            sleep_time = max(0, (1.0 / RATE) - elapsed_time)
+            time.sleep(sleep_time)
         rclpy.spin_once(node, timeout_sec=0)
-        rate.sleep()
+
     node.destroy_node()
     rclpy.shutdown()
 
