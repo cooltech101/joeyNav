@@ -3,9 +3,11 @@ import os
 import time
 
 import numpy as np
+import rclpy
 import torch
 import yaml
 from diffusers.schedulers.scheduling_ddpm import DDPMScheduler
+from rclpy.node import Node
 
 # ROS
 from sensor_msgs.msg import Image
@@ -54,33 +56,17 @@ def callback_obs(msg):
             context_queue.append(obs_img)
 
 
-import rclpy
-from rclpy.node import Node
-from sensor_msgs.msg import Image
-from std_msgs.msg import Float32MultiArray
-
-
 class ExplorationNode(Node):
     def __init__(self):
         super().__init__("exploration_node")
 
-        self.create_subscription(Image, IMAGE_TOPIC, self.callback_obs, 1)
+        self.create_subscription(Image, IMAGE_TOPIC, callback_obs, 1)
 
         self.waypoint_pub = self.create_publisher(Float32MultiArray, WAYPOINT_TOPIC, 1)
 
         self.sampled_actions_pub = self.create_publisher(
             Float32MultiArray, SAMPLED_ACTIONS_TOPIC, 1
         )
-
-        self.timer = self.create_timer(1.0 / RATE, self.timer_callback)
-
-    def callback_obs(self, msg):
-        # Your callback logic here
-        pass
-
-    def timer_callback(self):
-        # Your periodic execution logic here
-        pass
 
 
 def main(args: argparse.Namespace):
@@ -181,7 +167,7 @@ def main(args: argparse.Namespace):
             sampled_actions_msg = Float32MultiArray()
             sampled_actions_msg.data = np.concatenate(
                 (np.array([0]), naction.flatten())
-            )
+            ).tolist()
             node.sampled_actions_pub.publish(sampled_actions_msg)
 
             naction = naction[0]  # change this based on heuristic
@@ -190,7 +176,7 @@ def main(args: argparse.Namespace):
 
             if model_params["normalize"]:
                 chosen_waypoint *= MAX_V / RATE
-            waypoint_msg.data = chosen_waypoint
+            waypoint_msg.data = chosen_waypoint.tolist()
             node.waypoint_pub.publish(waypoint_msg)
             print("Published waypoint")
         rclpy.spin_once(node, timeout_sec=0)

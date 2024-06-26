@@ -25,11 +25,9 @@ RUN apt-get update && apt-get install -y \
 # Initialize rosdep
 RUN rosdep init && rosdep update
 
-
-
-
 # Install git and python3-pip
 RUN apt-get install -y git python3-pip
+RUN pip3 install gdown
 
 # Install Poetry
 RUN pip3 install poetry
@@ -50,6 +48,8 @@ WORKDIR /visualnav-transformer
 # Install dependencies using Poetry
 RUN poetry install --no-interaction --no-ansi
 
-COPY model_weights /visualnav-transformer/model_weights
+RUN mkdir /visualnav-transformer/model_weights
+RUN gdown https://drive.google.com/uc?id=1YJhkkMJAYOiKNyCaelbS_alpUpAJsOUb -O /visualnav-transformer/model_weights/nomad.pth
+
 # Set the entrypoint
 ENTRYPOINT ["/bin/bash"]
