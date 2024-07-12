@@ -112,7 +112,7 @@ def main(args: argparse.Namespace):
         loop_start_time = time.time()
         # EXPLORATION MODE
         waypoint_msg = Float32MultiArray()
-        print("Iam loop :D")
+        #print("Iam loop :D")
         if len(context_queue) > model_params["context_size"]:
             print("I am loop too!")
             obs_images = transform_images(
@@ -173,7 +173,9 @@ def main(args: argparse.Namespace):
             print(naction)
             naction = naction[0]  # change this based on heuristic
 
-            chosen_waypoint = naction[args.waypoint]
+            print(args.waypoint)
+            #chosen_waypoint = naction[args.waypoint]
+            chosen_waypoint = naction[-1]
 
             if model_params["normalize"]:
                 chosen_waypoint *= MAX_V / RATE

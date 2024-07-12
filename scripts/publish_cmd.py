@@ -41,9 +41,9 @@ def pd_controller(waypoint: np.ndarray) -> Tuple[float]:
         v = 0
         w = np.sign(dy) * np.pi / (2 * DT)
     else:
-        v = dx / DT
-        w = np.arctan(dy / dx) / DT
-    v = np.clip(v, 0, MAX_V)
+        v = 0.01 * dx / np.abs(dy) #dx / DT
+        w = np.arctan(dy / dx) #np.arctan(dy / dx) / DT
+    v = np.clip(v, -MAX_V, MAX_V)
     w = np.clip(w, -MAX_W, MAX_W)
     return v, w
 
