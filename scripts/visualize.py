@@ -18,7 +18,7 @@ def camera_callback(msg):
 def callback(msg):
     actions = msg.data
     actions = np.array(actions)[1:].reshape(-1, 2)
-    actions = actions * img.shape[0] / 17
+    actions = actions * img.shape[0] / 20
     actions[:, 1] = actions[:, 1] - img.shape[1] // 2
     actions[:, 0] = actions[:, 0] - img.shape[0]
     data = actions
@@ -39,7 +39,7 @@ plt.show()
 def main(args=None):
     rclpy.init(args=args)
     node = rclpy.create_node('sampled_actions_subscriber')
-    camera_subscriber = node.create_subscription(Image, "/camera/camera/color/image_raw", camera_callback, 1)
+    camera_subscriber = node.create_subscription(Image, "/camera/camera/color/image_raw", camera_callback, 10)
     subscriber = node.create_subscription(Float32MultiArray, "/sampled_actions", callback, 1)
     rclpy.spin(node)
     rclpy.shutdown()
