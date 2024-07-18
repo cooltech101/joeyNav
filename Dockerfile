@@ -33,7 +33,7 @@ RUN pip3 install gdown
 RUN pip3 install poetry
 
 # Clone the VisualNav-Transformer repository
-RUN git clone https://github.com/Robotecai/visualnav-transformer-ros2.git /visualnav-transformer
+RUN git clone https://github.com/Robotecai/visualnav-transformer-ros2.git /visualnav-transformer -b kd/nomad_on_husarion
 
 # Set up environment variables
 RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
