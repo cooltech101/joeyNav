@@ -60,7 +60,7 @@ class ExplorationNode(Node):
     def __init__(self):
         super().__init__("exploration_node")
 
-        self.create_subscription(Image, IMAGE_TOPIC, callback_obs, 1)
+        self.create_subscription(Image, IMAGE_TOPIC, callback_obs, 10)
 
         self.waypoint_pub = self.create_publisher(Float32MultiArray, WAYPOINT_TOPIC, 1)
 
@@ -174,8 +174,7 @@ def main(args: argparse.Namespace):
             naction = naction[0]  # change this based on heuristic
 
             print(args.waypoint)
-            #chosen_waypoint = naction[args.waypoint]
-            chosen_waypoint = naction[-1]
+            chosen_waypoint = naction[args.waypoint]
 
             if model_params["normalize"]:
                 chosen_waypoint *= MAX_V / RATE

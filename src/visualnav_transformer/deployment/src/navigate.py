@@ -135,91 +135,98 @@ def main(args: argparse.Namespace):
 
         waypoint_msg = Float32MultiArray()
         if len(context_queue) > model_params["context_size"]:
-            obs_images = transform_images(
-                context_queue, model_params["image_size"], center_crop=False
-            )
-            obs_images = torch.split(obs_images, 3, dim=1)
-            obs_images = torch.cat(obs_images, dim=1)
-            obs_images = obs_images.to(device)
-            mask = torch.zeros(1).long().to(device)
-
-            start = max(closest_node - args.radius, 0)
-            end = min(closest_node + args.radius + 1, goal_node)
-            goal_image = [
-                transform_images(
-                    g_img, model_params["image_size"], center_crop=False
-                ).to(device)
-                for g_img in topomap[start : end + 1]
-            ]
-            goal_image = torch.concat(goal_image, dim=0)
-
-            obsgoal_cond = model(
-                "vision_encoder",
-                obs_img=obs_images.repeat(len(goal_image), 1, 1, 1),
-                goal_img=goal_image,
-                input_goal_mask=mask.repeat(len(goal_image)),
-            )
-            dists = model("dist_pred_net", obsgoal_cond=obsgoal_cond)
-            dists = to_numpy(dists.flatten())
-            min_idx = np.argmin(dists)
-            closest_node = min_idx + start
-            print(f"closest node: {closest_node}, distance: {dists[min_idx]}")
-            sg_idx = min(
-                min_idx + int(dists[min_idx] < args.close_threshold),
-                len(obsgoal_cond) - 1,
-            )
-            obs_cond = obsgoal_cond[sg_idx].unsqueeze(0)
-
-            # infer action
-            with torch.no_grad():
-                # encoder vision features
-                if len(obs_cond.shape) == 2:
-                    obs_cond = obs_cond.repeat(args.num_samples, 1)
-                else:
-                    obs_cond = obs_cond.repeat(args.num_samples, 1, 1)
-
-                # initialize action from Gaussian noise
-                noisy_action = torch.randn(
-                    (args.num_samples, model_params["len_traj_pred"], 2),
-                    device=device,
+            if model_params["model_type"] == "nomad":
+                obs_images = transform_images(
+                    context_queue, model_params["image_size"], center_crop=False
                 )
-                naction = noisy_action
+                obs_images = torch.split(obs_images, 3, dim=1)
+                obs_images = torch.cat(obs_images, dim=1)
+                obs_images = obs_images.to(device)
+                mask = torch.zeros(1).long().to(device)
 
-                # init scheduler
-                noise_scheduler.set_timesteps(num_diffusion_iters)
+                start = max(closest_node - args.radius, 0)
+                end = min(closest_node + args.radius + 1, goal_node)
+                goal_image = [
+                    transform_images(
+                        g_img, model_params["image_size"], center_crop=False
+                    ).to(device)
+                    for g_img in topomap[start : end + 1]
+                ]
+                goal_image = torch.concat(goal_image, dim=0)
 
-                start_time = time.time()
-                for k in noise_scheduler.timesteps[:]:
-                    # predict noise
-                    noise_pred = model(
-                        "noise_pred_net",
-                        sample=naction,
-                        timestep=k,
-                        global_cond=obs_cond,
+                obsgoal_cond = model(
+                    "vision_encoder",
+                    obs_img=obs_images.repeat(len(goal_image), 1, 1, 1),
+                    goal_img=goal_image,
+                    input_goal_mask=mask.repeat(len(goal_image)),
+                )
+                dists = model("dist_pred_net", obsgoal_cond=obsgoal_cond)
+                dists = to_numpy(dists.flatten())
+                min_idx = np.argmin(dists)
+                closest_node = min_idx + start
+                print(f"closest node: {closest_node}, distance: {dists[min_idx]}")
+                sg_idx = min(
+                    min_idx + int(dists[min_idx] < args.close_threshold),
+                    len(obsgoal_cond) - 1,
+                )
+                obs_cond = obsgoal_cond[sg_idx].unsqueeze(0)
+
+                # infer action
+                with torch.no_grad():
+                    # encoder vision features
+                    if len(obs_cond.shape) == 2:
+                        obs_cond = obs_cond.repeat(args.num_samples, 1)
+                    else:
+                        obs_cond = obs_cond.repeat(args.num_samples, 1, 1)
+
+                    # initialize action from Gaussian noise
+                    noisy_action = torch.randn(
+                        (args.num_samples, model_params["len_traj_pred"], 2),
+                        device=device,
                     )
-                    # inverse diffusion step (remove noise)
-                    naction = noise_scheduler.step(
-                        model_output=noise_pred, timestep=k, sample=naction
-                    ).prev_sample
+                    naction = noisy_action
 
-            naction = to_numpy(get_action(naction))
-            sampled_actions_msg = Float32MultiArray()
-            sampled_actions_msg.data = np.concatenate(
-                (np.array([0]), naction.flatten())
-            ).tolist()
-            #print("published sampled actions")
-            node.sampled_actions_pub.publish(sampled_actions_msg)
-            naction = naction[0]
-            chosen_waypoint = naction[args.waypoint]
+                    # init scheduler
+                    noise_scheduler.set_timesteps(num_diffusion_iters)
 
-            if model_params["normalize"]:
-                chosen_waypoint *= MAX_V / RATE
-            waypoint_msg.data = chosen_waypoint.tolist()
-            node.waypoint_pub.publish(waypoint_msg)
+                    start_time = time.time()
+                    for k in noise_scheduler.timesteps[:]:
+                        # predict noise
+                        noise_pred = model(
+                            "noise_pred_net",
+                            sample=naction,
+                            timestep=k,
+                            global_cond=obs_cond,
+                        )
+                        # inverse diffusion step (remove noise)
+                        naction = noise_scheduler.step(
+                            model_output=noise_pred, timestep=k, sample=naction
+                        ).prev_sample
 
-            elapsed_time = time.time() - loop_start_time
-            sleep_time = max(0, (1.0 / RATE) - elapsed_time)
-            time.sleep(sleep_time)
+                naction = to_numpy(get_action(naction))
+                sampled_actions_msg = Float32MultiArray()
+                sampled_actions_msg.data = np.concatenate(
+                    (np.array([0]), naction.flatten())
+                ).tolist()
+                #print("published sampled actions")
+                node.sampled_actions_pub.publish(sampled_actions_msg)
+                naction = naction[0]
+                chosen_waypoint = naction[args.waypoint]
+
+                if model_params["normalize"]:
+                    chosen_waypoint *= MAX_V / RATE
+                waypoint_msg.data = chosen_waypoint.tolist()
+                node.waypoint_pub.publish(waypoint_msg)
+
+                elapsed_time = time.time() - loop_start_time
+                sleep_time = max(0, (1.0 / RATE) - elapsed_time)
+                time.sleep(sleep_time)
+
+        reached_goal = closest_node == goal_node
+        if reached_goal:
+            print("Reached goal! Stopping...")
+            break
+
         rclpy.spin_once(node, timeout_sec=0)
 
     node.destroy_node()
