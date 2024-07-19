@@ -17,7 +17,7 @@ docker build -t visualnav_transformer:latest .
 
 3. Run the Docker container:
 ```bash
-docker run -it --rm --gpus=all --net=host visualnav_transformer:latest
+docker run -it --env ROS_DOMAIN_ID=$ROS_DOMAIN_ID --rm --gpus=all --net=host visualnav_transformer:latest
 ```
 
 4. Run the model:

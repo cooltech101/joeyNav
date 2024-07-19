@@ -22,6 +22,26 @@ RUN apt-get update && apt-get install -y \
     python3-rosdep \
     python3-argcomplete
 
+# Disable shared memory for FastRTPS
+RUN echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?> \
+<profiles xmlns=\"http://www.eprosima.com/XMLSchemas/fastRTPS_Profiles\" > \
+    <transport_descriptors> \
+        <transport_descriptor> \
+            <transport_id>CustomUdpTransport</transport_id> \
+            <type>UDPv4</type> \
+        </transport_descriptor> \
+    </transport_descriptors> \
+    <participant profile_name=\"participant_profile\" is_default_profile=\"true\"> \
+        <rtps> \
+            <userTransports> \
+                <transport_id>CustomUdpTransport</transport_id> \
+            </userTransports> \
+            <useBuiltinTransports>false</useBuiltinTransports> \
+        </rtps> \
+    </participant> \
+</profiles>" > /fastrtps_disable_shm.xml
+ENV FASTRTPS_DEFAULT_PROFILES_FILE=/fastrtps_disable_shm.xml
+
 # Initialize rosdep
 RUN rosdep init && rosdep update
 
