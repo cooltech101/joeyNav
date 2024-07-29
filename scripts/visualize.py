@@ -6,6 +6,11 @@ from sensor_msgs.msg import Image
 from std_msgs.msg import Float32MultiArray
 from cv_bridge import CvBridge
 
+from visualnav_transformer.deployment.src.topic_names import (
+    IMAGE_TOPIC,
+    SAMPLED_ACTIONS_TOPIC,
+)
+
 data = []
 
 img = np.zeros((100, 100, 3))
@@ -39,8 +44,8 @@ plt.show()
 def main(args=None):
     rclpy.init(args=args)
     node = rclpy.create_node('sampled_actions_subscriber')
-    camera_subscriber = node.create_subscription(Image, "/camera/camera/color/image_raw", camera_callback, 10)
-    subscriber = node.create_subscription(Float32MultiArray, "/sampled_actions", callback, 1)
+    camera_subscriber = node.create_subscription(Image, IMAGE_TOPIC, camera_callback, 10)
+    subscriber = node.create_subscription(Float32MultiArray, SAMPLED_ACTIONS_TOPIC, callback, 1)
     rclpy.spin(node)
     rclpy.shutdown()
 

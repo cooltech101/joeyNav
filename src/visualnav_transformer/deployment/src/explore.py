@@ -112,9 +112,7 @@ def main(args: argparse.Namespace):
         loop_start_time = time.time()
         # EXPLORATION MODE
         waypoint_msg = Float32MultiArray()
-        #print("Iam loop :D")
         if len(context_queue) > model_params["context_size"]:
-            print("I am loop too!")
             obs_images = transform_images(
                 context_queue, model_params["image_size"], center_crop=False
             )
