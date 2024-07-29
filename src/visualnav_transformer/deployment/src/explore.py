@@ -60,7 +60,7 @@ class ExplorationNode(Node):
     def __init__(self):
         super().__init__("exploration_node")
 
-        self.create_subscription(Image, IMAGE_TOPIC, callback_obs, 1)
+        self.create_subscription(Image, IMAGE_TOPIC, callback_obs, 10)
 
         self.waypoint_pub = self.create_publisher(Float32MultiArray, WAYPOINT_TOPIC, 1)
 
@@ -112,9 +112,7 @@ def main(args: argparse.Namespace):
         loop_start_time = time.time()
         # EXPLORATION MODE
         waypoint_msg = Float32MultiArray()
-        print("Iam loop :D")
         if len(context_queue) > model_params["context_size"]:
-            print("I am loop too!")
             obs_images = transform_images(
                 context_queue, model_params["image_size"], center_crop=False
             )
@@ -173,6 +171,7 @@ def main(args: argparse.Namespace):
             print(naction)
             naction = naction[0]  # change this based on heuristic
 
+            print(args.waypoint)
             chosen_waypoint = naction[args.waypoint]
 
             if model_params["normalize"]:

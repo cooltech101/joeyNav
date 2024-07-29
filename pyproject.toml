@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10, <3.11"
-torch = "1.12.1"
+torch = "^2.3"
 diffusion-policy = {git = "https://github.com/RobotecAI/diffusion_policy.git", branch = "main"}
 diffusers = "^0.29.1"
 efficientnet-pytorch = "^0.7.1"

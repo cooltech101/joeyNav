@@ -22,6 +22,7 @@ RATE = 9
 EPS = 1e-8
 WAYPOINT_TIMEOUT = 1  # seconds # TODO: tune this
 FLIP_ANG_VEL = np.pi / 4
+LINEAR_VEL = 1e-2
 
 
 def pd_controller(waypoint: np.ndarray) -> Tuple[float]:
@@ -41,9 +42,9 @@ def pd_controller(waypoint: np.ndarray) -> Tuple[float]:
         v = 0
         w = np.sign(dy) * np.pi / (2 * DT)
     else:
-        v = dx / DT
-        w = np.arctan(dy / dx) / DT
-    v = np.clip(v, 0, MAX_V)
+        v = LINEAR_VEL * dx / np.abs(dy)
+        w = np.arctan(dy / dx)
+    v = np.clip(v, -MAX_V, MAX_V)
     w = np.clip(w, -MAX_W, MAX_W)
     return v, w
 
