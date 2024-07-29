@@ -208,7 +208,6 @@ def main(args: argparse.Namespace):
                 sampled_actions_msg.data = np.concatenate(
                     (np.array([0]), naction.flatten())
                 ).tolist()
-                #print("published sampled actions")
                 node.sampled_actions_pub.publish(sampled_actions_msg)
                 naction = naction[0]
                 chosen_waypoint = naction[args.waypoint]
