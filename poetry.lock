@@ -899,7 +899,7 @@ name = "diffusion-policy"
 version = "0.1.0"
 description = "Your project description"
 optional = false
-python-versions = "^3.10, <3.11"
+python-versions = "^3.10, <3.13"
 files = []
 develop = false
 
@@ -948,8 +948,8 @@ zarr = "*"
 [package.source]
 type = "git"
 url = "https://github.com/RobotecAI/diffusion_policy.git"
-reference = "kd/bump_torch"
-resolved_reference = "e33dc792277cf713f9edddb2343697a5823e91b4"
+reference = "main"
+resolved_reference = "2356a7fbbfaf0ccccf9883b972b5a434d0f5ede3"
 
 [[package]]
 name = "dill"
@@ -2921,8 +2921,10 @@ files = [
 
 [package.dependencies]
 numpy = [
-    {version = ">=1.21.4", markers = "python_version >= \"3.10\" and platform_system == \"Darwin\""},
-    {version = ">=1.21.2", markers = "platform_system != \"Darwin\" and python_version >= \"3.10\""},
+    {version = ">=1.26.0", markers = "python_version >= \"3.12\""},
+    {version = ">=1.23.5", markers = "python_version >= \"3.11\" and python_version < \"3.12\""},
+    {version = ">=1.21.4", markers = "python_version >= \"3.10\" and platform_system == \"Darwin\" and python_version < \"3.11\""},
+    {version = ">=1.21.2", markers = "platform_system != \"Darwin\" and python_version >= \"3.10\" and python_version < \"3.11\""},
 ]
 
 [[package]]
@@ -2975,7 +2977,11 @@ files = [
 ]
 
 [package.dependencies]
-numpy = {version = ">=1.22.4", markers = "python_version < \"3.11\""}
+numpy = [
+    {version = ">=1.26.0", markers = "python_version >= \"3.12\""},
+    {version = ">=1.23.2", markers = "python_version == \"3.11\""},
+    {version = ">=1.22.4", markers = "python_version < \"3.11\""},
+]
 python-dateutil = ">=2.8.2"
 pytz = ">=2020.1"
 tzdata = ">=2022.7"
@@ -5578,5 +5584,5 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.10, <3.11"
-content-hash = "950c21995934f812ff2e3ef53135cf989023c8aa6a2453bc1dfe8591b96034ac"
+python-versions = "^3.10, <3.13"
+content-hash = "955af864b20f867b9e6a541a611cbb08fda393a51c0982f5608231fde7677261"
