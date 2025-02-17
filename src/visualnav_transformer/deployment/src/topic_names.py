@@ -3,7 +3,7 @@
 # image obs topics
 FRONT_IMAGE_TOPIC = "/usb_cam_front/image_raw"
 REVERSE_IMAGE_TOPIC = "/usb_cam_reverse/image_raw"
-IMAGE_TOPIC = "/camera/rgb/image"
+IMAGE_TOPIC = "/world/world_demo/model/turtlebot/link/camera_front/sensor/color/image"
 
 # exploration topics
 SUBGOALS_TOPIC = "/subgoals"
