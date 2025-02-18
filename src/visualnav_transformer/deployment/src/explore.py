@@ -12,7 +12,6 @@ from rclpy.node import Node
 # ROS
 from sensor_msgs.msg import Image
 from std_msgs.msg import Float32MultiArray
-#from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
 
 # UTILS
 from visualnav_transformer.deployment.src.topic_names import (
@@ -60,8 +59,6 @@ def callback_obs(msg):
 class ExplorationNode(Node):
     def __init__(self):
         super().__init__("exploration_node")
-
-        #BE_qos = QoSProfile(reliability=QoSReliabilityPolicy.BEST_EFFORT, history=QoSHistoryPolicy.KEEP_LAST, depth=10)
 
         self.create_subscription(Image, IMAGE_TOPIC, callback_obs, 10)
 
