@@ -80,7 +80,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--dt",
         "-t",
-        default=0.2,
+        default=1.0,
         type=float,
         help=f"time between images sampled from the {IMAGE_TOPIC} topic (default: 3.0)",
     )
