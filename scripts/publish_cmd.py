@@ -14,6 +14,7 @@ from visualnav_transformer.deployment.src.topic_names import WAYPOINT_TOPIC
 CONFIG_PATH = "config/robot.yaml"
 with open(CONFIG_PATH, "r") as f:
     robot_config = yaml.safe_load(f)
+MIN_V = 0.7 
 MAX_V = robot_config["max_v"]
 MAX_W = robot_config["max_w"]
 VEL_TOPIC = robot_config["vel_navi_topic"]
@@ -24,30 +25,40 @@ WAYPOINT_TIMEOUT = 1  # seconds # TODO: tune this
 FLIP_ANG_VEL = np.pi / 4
 LINEAR_VEL = 1e-2
 
-
-def pd_controller(waypoint: np.ndarray) -> Tuple[float]:
-    """PD controller for the robot"""
-    assert (
-        len(waypoint) == 2 or len(waypoint) == 4
-    ), "waypoint must be a 2D or 4D vector"
+def pd_controller(waypoint: np.ndarray, v_prev: float, w_prev: float) -> Tuple[float, float]:
+    """PD controller for the robot with acceleration limiting"""
+    assert len(waypoint) == 2 or len(waypoint) == 4, "waypoint must be a 2D or 4D vector"
     if len(waypoint) == 2:
         dx, dy = waypoint
     else:
         dx, dy, hx, hy = waypoint
-    # this controller only uses the predicted heading if dx and dy near zero
+
+    # Compute desired velocities
     if len(waypoint) == 4 and np.abs(dx) < EPS and np.abs(dy) < EPS:
-        v = 0
-        w = clip_angle(np.arctan2(hy, hx)) / DT
+        v_des = 0
+        w_des = clip_angle(np.arctan2(hy, hx)) / DT
     elif np.abs(dx) < EPS:
-        v = 0
-        w = np.sign(dy) * np.pi / (2 * DT)
+        v_des = 0
+        w_des = np.sign(dy) * np.pi / (2 * DT)
     else:
-        v = LINEAR_VEL * dx / np.abs(dy)
-        w = np.arctan(dy / dx)
+        v_des = LINEAR_VEL * dx / np.abs(dy)
+        w_des = np.arctan(dy / dx)
+
+    # Acceleration limiting
+    max_dv = MAX_ACC_V * DT
+    max_dw = MAX_ACC_W * DT
+    v = np.clip(v_des, v_prev - max_dv, v_prev + max_dv)
+    w = np.clip(w_des, w_prev - max_dw, w_prev + max_dw)
+
+    # Velocity limiting
     v = np.clip(v, -MAX_V, MAX_V)
     w = np.clip(w, -MAX_W, MAX_W)
-    return v, w
 
+    # Minimum velocity enforcement
+    if np.abs(v) > 0 and np.abs(v) < MIN_V:
+        v = np.sign(v) * MIN_V
+
+    return v, w
 
 class VelPublisher(Node):
     def __init__(self):
@@ -57,20 +68,27 @@ class VelPublisher(Node):
             Float32MultiArray, WAYPOINT_TOPIC, self.waypoint_callback, 10
         )
 
-        # Publisher
         self.publisher = self.create_publisher(Twist, "/cmd_vel", 10)
 
         self.bridge = CvBridge()
         self.latest_image = None
         self.latest_waypoint = None
 
+        # Initialize previous velocities
+        self.v_prev = 0.0
+        self.w_prev = 0.0
+
     def waypoint_callback(self, msg):
-        v, w = pd_controller(msg.data)
+        v, w = pd_controller(np.array(msg.data), self.v_prev, self.w_prev)
+
+        # Store for next time step
+        self.v_prev = v
+        self.w_prev = w
+
         twist = Twist()
         twist.linear.x = v
         twist.angular.z = w
         self.publisher.publish(twist)
-
 
 def main(args=None):
     rclpy.init(args=args)
