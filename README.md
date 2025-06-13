@@ -24,7 +24,13 @@ If desired, you can visualize the camera view and model path predictions.
 python scripts/visualize.py
 ```
 
-5. If desired, download my custom [weights](https://drive.google.com/file/d/1EM8aLJl9-jsC9eJaA9YFj-ExUTiryI8q/view?usp=sharing) and copy it to `/NOMAD/model_weights`. Rename it to `nomad.pth`. These weights were finetuned on the Joey embodiment in the Hospital and Office Isaac Sim environments. 
+5. If desired, download my custom [weights](https://drive.google.com/file/d/1EM8aLJl9-jsC9eJaA9YFj-ExUTiryI8q/view?usp=sharing) and copy it to `/NOMAD/model_weights`. Rename it to `nomad.pth`. These weights were finetuned on the Joey embodiment in the Hospital and Office Isaac Sim environments.
+
+6. Other configurations
+`config/robot.yaml`: max linear and angular velocities, frame_rate and graph_rate
+`scripts/publish_cmd.py`: min linear velocity, max linear and angular acceleration, Twist topic name
+`src/visualnav_transformer/deployment/src/topic_names.py`: image and odometry topic names
+
 
 #### Creating a topomap of the environment
 
