@@ -70,7 +70,7 @@ class VelPublisher(Node):
             Float32MultiArray, WAYPOINT_TOPIC, self.waypoint_callback, 10
         )
 
-        self.publisher = self.create_publisher(Twist, "/cmd_vel", 10)
+        self.publisher = self.create_publisher(Twist, "/joey1/cmd_vel", 10)
 
         self.bridge = CvBridge()
         self.latest_image = None
