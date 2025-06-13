@@ -1,30 +1,27 @@
-# General Navigation Models: GNM, ViNT and NoMaD
+# NoMaD Inference on ROS2
 
 This repository is a port of [visualnav-transformer](https://github.com/robodhruv/visualnav-transformer) to ROS2. Its purpose is to make running the models more straightforward by providing a Dockerfile with all dependencies set up. For more details on the models, please refer to the original repository.
 
-### Running the code
+#### Running the code
+1. Prerequisites: sudo access, install git, install curl
 
-1. Clone the repository:
+2. Download install_nomad.sh and run it in the target directory
 ```bash
-git clone https://github.com/RobotecAI/visualnav-transformer-ros2
-cd visualnav-transformer-ros2
+./install_nomad.sh
 ```
 
-2. Build the Docker image:
-```bash
-docker build -t visualnav_transformer:latest .
-```
-
-3. Run the Docker container:
-```bash
-docker run -it --env ROS_DOMAIN_ID=$ROS_DOMAIN_ID --rm --gpus=all --net=host visualnav_transformer:latest
-```
-
-4. Run the model:
-
-Inside the container, run the following commands:
+3. Start the shell environment:
 ```bash
 poetry shell
+```
+
+4. Run goal-agnostic exploration and publish the commands to /joey1/cmd_vel:
+```bash
+python src/visualnav_transformer/deployment/src/navigate.py & python scripts/publish_cmd.py
+```
+
+
+
 python src/visualnav_transformer/deployment/src/explore.py
 ```
 This will run the model and publish the predicted waypoints to a ROS2 topic, but your robot will not move yet. Next to running the model you have to run a script that will publish the movement commands to the robot.
