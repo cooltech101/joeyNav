@@ -35,6 +35,6 @@ The script will save an image from the camera every second (this interval can be
 ### Navigation
 Having created a topomap of the environment, you can now run the navigation script:
 ```bash
-python src/visualnav_transformer/deployment/src/navigate.py
+python src/visualnav_transformer/deployment/src/navigate.py & python scripts/publish_cmd.py
 ```
 By default the robot will try to follow the topomap to reach the last image captured. You can specify a different goal image by providing an index of an image in the topomap using the `--goal-node` parameter.
