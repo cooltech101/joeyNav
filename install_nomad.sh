@@ -39,6 +39,7 @@ poetry install --no-interaction --no-ansi
 
 # Install poetry shell plugin
 poetry self add poetry-plugin-shell
+poetry self update
 
 
 mkdir ~/NOMAD/model_weights
