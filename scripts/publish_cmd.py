@@ -14,7 +14,7 @@ from visualnav_transformer.deployment.src.topic_names import WAYPOINT_TOPIC
 CONFIG_PATH = "config/robot.yaml"
 with open(CONFIG_PATH, "r") as f:
     robot_config = yaml.safe_load(f)
-MIN_V = 0.7 
+MIN_V = 0.5 
 MAX_ACC_V = 0.5
 MAX_ACC_W = np.pi
 MAX_V = robot_config["max_v"]
