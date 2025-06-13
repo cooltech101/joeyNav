@@ -10,7 +10,7 @@ This repository is a port of [visualnav-transformer](https://github.com/robodhru
 ./install_nomad.sh
 ```
 
-3. Start the shell environment:
+3. Spawn a shell session:
 ```bash
 poetry shell
 ```
