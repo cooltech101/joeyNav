@@ -34,7 +34,7 @@ python src/visualnav_transformer/deployment/src/create_topomap.py
 ```
 The script will save an image from the camera every second (this interval can be changed with the `-t` parameter). Now you can drive the robot around the environment manually (using your navigation stack or teleop) and the map will be saved automatically. After you have driven around the environment, you can stop the script and proceed to the next step.
 
-### Navigation
+#### Navigation
 Having created a topomap of the environment, you can now run the navigation script:
 ```bash
 python src/visualnav_transformer/deployment/src/navigate.py & python scripts/publish_cmd.py
