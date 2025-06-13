@@ -19,10 +19,12 @@ poetry shell
 ```bash
 python src/visualnav_transformer/deployment/src/explore.py & python scripts/publish_cmd.py
 ```
-If desired, you can see the camera view and model path predictions. 
+If desired, you can visualize the camera view and model path predictions. 
 ```bash
 python scripts/visualize.py
 ```
+
+5. If desired, download my custom [weights](https://drive.google.com/file/d/1EM8aLJl9-jsC9eJaA9YFj-ExUTiryI8q/view?usp=sharing) and copy it to `/NOMAD/model_weights`. Rename it to `nomad.pth`. These weights were finetuned on the Joey embodiment in the Hospital and Office Isaac Sim environments. 
 
 #### Creating a topomap of the environment
 
