@@ -21,14 +21,18 @@ sudo rosdep init && rosdep update
 sudo apt-get install -y git python3-pip
 pip3 install gdown
 
-# Install Poetry ..first time installation might fail, need to add Poetry to PATH, then reload terminal
+# Install Poetry ..first time installation might fail, if so reload terminal and try again
 curl -sSL https://install.python-poetry.org | python3 -
 
+# Add Poetry to PATH
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+
 # Clone the VisualNav-Transformer repository
-git clone https://github.com/cooltech101/joeyNav.git ~/vnav-transformer
+git clone https://github.com/cooltech101/joeyNav.git ~/NOMAD
 
 # Set the working directory
-cd ~/vnav-transformer
+cd ~/NOMAD
 
 # Install dependencies using Poetry
 poetry install --no-interaction --no-ansi
@@ -37,5 +41,5 @@ poetry install --no-interaction --no-ansi
 poetry self add poetry-plugin-shell
 
 
-mkdir ~/vnav-transformer/model_weights
-python3 -m gdown https://drive.google.com/uc?id=1YJhkkMJAYOiKNyCaelbS_alpUpAJsOUb -O ~/vnav-transformer/model_weights/nomad.pth
+mkdir ~/NOMAD/model_weights
+python3 -m gdown https://drive.google.com/uc?id=1YJhkkMJAYOiKNyCaelbS_alpUpAJsOUb -O ~/NOMAD/model_weights/nomad.pth
