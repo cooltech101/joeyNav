@@ -2,7 +2,7 @@
 
 This repository is a port of [visualnav-transformer](https://github.com/robodhruv/visualnav-transformer) to ROS2. Its purpose is to make running the models more straightforward by providing a Dockerfile with all dependencies set up. For more details on the models, please refer to the original repository.
 
-#### Running the code
+#### Goal-agnostic Exploration
 1. Prerequisites: `sudo`, `git`, `curl`
 
 2. Download install_nomad.sh and run it in the target directory
@@ -32,15 +32,13 @@ python scripts/visualize.py
 `src/visualnav_transformer/deployment/src/topic_names.py`: image and odometry topic names
 
 
-#### Creating a topomap of the environment
-
-In order to navigate to a desired goal location, the robot needs to have a map of the environment. To create a topomap of the environment, you can run the following command:
+#### Path Following
+Create a topomap of the environment (directory of saved images):
 ```bash
 python src/visualnav_transformer/deployment/src/create_topomap.py
 ```
 The script will save an image from the camera every second (this interval can be changed with the `-t` parameter). Now you can drive the robot around the environment manually (using your navigation stack or teleop) and the map will be saved automatically. After you have driven around the environment, you can stop the script and proceed to the next step.
 
-#### Navigation
 Having created a topomap of the environment, you can now run the navigation script:
 ```bash
 python src/visualnav_transformer/deployment/src/navigate.py & python scripts/publish_cmd.py
