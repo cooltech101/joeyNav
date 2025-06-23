@@ -1,6 +1,6 @@
 # NoMaD Inference on ROS2
 
-This repository is a port of [visualnav-transformer](https://github.com/robodhruv/visualnav-transformer) to ROS2. Its purpose is to make running the models more straightforward by providing a Dockerfile with all dependencies set up. For more details on the models, please refer to the original repository.
+This repository is based on a port of [visualnav-transformer-ROS1](https://github.com/robodhruv/visualnav-transformer) to ROS2. It has been further changed from [visualnav-transformer-ROS2](https://github.com/RobotecAI/visualnav-transformer-ros2) to enable quick deployment for inference outside a Docker container. For more details on the models, please refer to the original repositories.
 
 #### Goal-agnostic Exploration
 1. Prerequisites: `sudo`, `git`, `curl`
