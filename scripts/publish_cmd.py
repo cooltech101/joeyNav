@@ -14,9 +14,9 @@ from visualnav_transformer.deployment.src.topic_names import WAYPOINT_TOPIC
 CONFIG_PATH = "config/robot.yaml"
 with open(CONFIG_PATH, "r") as f:
     robot_config = yaml.safe_load(f)
-MIN_V = 0.5 
-MAX_ACC_V = 0.5
-MAX_ACC_W = np.pi
+MIN_V = 0.5     # minimum linear velocity
+MAX_ACC_V = 0.5     # maximum linear acceleration
+MAX_ACC_W = np.pi     # maximum angular acceleration
 MAX_V = robot_config["max_v"]
 MAX_W = robot_config["max_w"]
 VEL_TOPIC = robot_config["vel_navi_topic"]
@@ -70,6 +70,7 @@ class VelPublisher(Node):
             Float32MultiArray, WAYPOINT_TOPIC, self.waypoint_callback, 10
         )
 
+        # Twist topic name
         self.publisher = self.create_publisher(Twist, "/joey1/cmd_vel", 10)
 
         self.bridge = CvBridge()
