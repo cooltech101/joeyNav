@@ -5,8 +5,9 @@ This repository is based on a port of [visualnav-transformer-ROS1](https://githu
 #### Goal-agnostic Exploration
 1. Prerequisites: `sudo`, `git`, `curl`
 
-2. Download install_nomad.sh and run it in the target directory
+2. Download install_nomad.sh, make it executable and run it in the target directory
 ```bash
+chmod +x install_nomad.sh
 ./install_nomad.sh
 ```
 
